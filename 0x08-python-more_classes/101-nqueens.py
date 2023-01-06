@@ -5,79 +5,94 @@ This module contains an algorithm that resolves the N-Queen puzzle
 using backtracking
 
 """
-class NQueens:
-    """Generate all valid solutions for the n queens puzzle"""
-    def __init__(self, size):
-        # Store the puzzle (problem) size and the number of valid solutions
-        self.size = size
-        self.solutions = 0
-        self.solve()
-
-    def solve(self):
-        """Solve the n queens puzzle and print the number of solutions"""
-        positions = [-1] * self.size
-        self.put_queen(positions, 0)
-        print("Found", self.solutions, "solutions.")
-
-    def put_queen(self, positions, target_row):
-        """
-        Try to place a queen on target_row by checking all N possible cases.
-        If a valid place is found the function calls itself trying to place a queen
-        on the next row until all N queens are placed on the NxN board.
-        """
-        # Base (stop) case - all N rows are occupied
-        if target_row == self.size:
-            self.show_full_board(positions)
-            # self.show_short_board(positions)
-            self.solutions += 1
-        else:
-            # For all N columns positions try to place a queen
-            for column in range(self.size):
-                # Reject all invalid positions
-                if self.check_place(positions, target_row, column):
-                    positions[target_row] = column
-                    self.put_queen(positions, target_row + 1)
+global N
+N = 4
 
 
-    def check_place(self, positions, ocuppied_rows, column):
-        """
-        Check if a given position is under attack from any of
-        the previously placed queens (check column and diagonal positions)
-        """
-        for i in range(ocuppied_rows):
-            if positions[i] == column or \
-                positions[i] - i == column - ocuppied_rows or \
-                positions[i] + i == column + ocuppied_rows:
+def printSolution(board):
+    for i in range(N):
+        for j in range(N):
+            print(board[i][j], end=" ")
+        print()
 
-                return False
+
+# A utility function to check if a queen can
+# be placed on board[row][col]. Note that this
+# function is called when "col" queens are
+# already placed in columns from 0 to col -1.
+# So we need to check only left side for
+# attacking queens
+def isSafe(board, row, col):
+    # Check this row on left side
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+
+    # Check upper diagonal on left side
+    for i, j in zip(range(row, -1, -1),
+                    range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on left side
+    for i, j in zip(range(row, N, 1),
+                    range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+
+def solveNQUtil(board, col):
+    # base case: If all queens are placed
+    # then return true
+    if col >= N:
         return True
 
-    def show_full_board(self, positions):
-        """Show the full NxN board"""
-        for row in range(self.size):
-            line = ""
-            for column in range(self.size):
-                if positions[row] == column:
-                    line += "Q "
-                else:
-                    line += ". "
-            print(line)
-        print("\n")
+    # Consider this column and try placing
+    # this queen in all rows one by one
+    for i in range(N):
 
-    def show_short_board(self, positions):
-        """
-        Show the queens positions on the board in compressed form,
-        each number represent the occupied column position in the corresponding row.
-        """
-        line = ""
-        for i in range(self.size):
-            line += str(positions[i]) + " "
-        print(line)
+        if isSafe(board, i, col):
 
-def main():
-    """Initialize and solve the n queens puzzle"""
-    NQueens(8)
+            # Place this queen in board[i][col]
+            board[i][col] = 1
 
-if __name__ == "__main__":
-    # execute only if run as a script
-    main()
+            # recur to place rest of the queens
+            if solveNQUtil(board, col + 1) == True:
+                return True
+
+            # If placing queen in board[i][col
+            # doesn't lead to a solution, then
+            # queen from board[i][col]
+            board[i][col] = 0
+
+    # if the queen can not be placed in any row in
+    # this column col then return false
+    return False
+
+
+# This function solves the N Queen problem using
+# Backtracking. It mainly uses solveNQUtil() to
+# solve the problem. It returns false if queens
+# cannot be placed, otherwise return true and
+# placement of queens in the form of 1s.
+# note that there may be more than one
+# solutions, this function prints one of the
+# feasible solutions.
+def solveNQ():
+    board = [[0, 0, 0, 0],
+             [0, 0, 0, 0],
+             [0, 0, 0, 0],
+             [0, 0, 0, 0]]
+
+    if solveNQUtil(board, 0) == False:
+        print("Solution does not exist")
+        return False
+
+    printSolution(board)
+    return True
+
+
+# Driver Code
+solveNQ()
