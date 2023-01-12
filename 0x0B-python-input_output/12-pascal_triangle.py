@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Module for pascal_triangule method"""
+"""Module for pascal_triangle method"""
 
 
 def pascal_triangle(n):
