@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 """
 Contains the class Square and subclass
+
+*******
+Square class that inherits from Rectangle that inherits Rectangle
 """
 
 Rectangle = __import__('9-rectangle').Rectangle
 
-"""Square class that inherits from Rectangle that inherits Rectangle"""
 class Square(Rectangle):
     """A representation of a square"""
     def __init__(self, size):
